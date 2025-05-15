@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100dvh;
+        width: 100vw;
+        background-color: rgba(18, 18, 18, 1);
+        overflow-x: hidden;
+        box-sizing: border-box;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    
+    div,h1 {
+        width: 90%;
+        max-width: 800px; 
+        height: auto;
+        min-height: 90%;
+        max-height: 90vh;
+        background-color: rgba(30, 30, 30, 0.8824);
+        margin: 20px 0;
+        padding: 20px;
+        box-sizing: border-box;
+        color: white;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        font-family: Arial, Helvetica, sans-serif;
+        font-weight: bold;
+        font-size: 30px;
+        flex-direction: column;
+    }
+    h4{
+        color: white;
+        font-weight: normal;
+        font-family: Arial, sans-serif;
+        justify-content: left;
+    }
+    input{
+        width: 100%;
+        height: 40px;
+        border: none;
+        background-color: rgba(48, 48, 48, 0.8824);
+        padding-left: 10px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        color: white;
+    }
+    button{
+        width: 100%;
+        height: 40px;
+        border: none;
+        background-color:#0a9feae1;
+        padding-left: 10px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        color: white;
+        font-family: Arial, Helvetica, sans-serif;
+        font-weight: bold;
+    }
+    .login{
+        width: 100%;
+        height: 10px;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        text-align: right;
+    }
+    #confirmar{
+        margin-bottom: 5px;
+    }
+    p,a{
+        font-size: 12px;
+        text-decoration: none;
+        padding-left: 10px;
+    }
+    a{
+        color: #0a9feae1;
+    }
+    @media (max-width: 600px) {
+        div {
+            width: 95%;
+            min-height: 80%;
+        }
+    }
+    
+    @media (max-height: 500px) {
+        div {
+            min-height: 85%;
+        }
+    }
+</style>
+<body>
+    <div>
+        <h1>Fazer login</h1>
+        <input type="text" placeholder="Digite o seu email" id="email">
+        <input type="text" placeholder="Digite sua senha" id="senha">
+        <div class="login">
+            <p>Esqueceu a senha?<a href="login.html">Clique aqui</a></p> <!--Adicionar a funções-->
+        </div>
+        <button onclick="proxima_pagina()">Entrar</button>
+    </div>
+    <script>
+        function proxima_pagina(){
+            location.href = "dashboard.html"
+        }
+    </script>
+</body>
+</html>

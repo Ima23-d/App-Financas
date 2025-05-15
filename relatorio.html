@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Relatórios Financeiros</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #0a9feae1;
+      --secondary-color: #00BFFF;
+      --dark-bg: #111;
+      --card-bg: rgba(46, 46, 46, 1);
+      --input-bg: rgba(55, 55, 55, 1);
+      --navbar-bg: #222;
+      --success-color: #00FF66;
+      --danger-color: #FF4500;
+      --text-light: #FFFFFF;
+      --text-muted: #888888;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--dark-bg);
+      color: var(--text-light);
+      padding: 0;
+      margin: 0;
+      min-height: 100vh;
+      padding-bottom: 70px;
+      overflow-x: hidden;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: clamp(1.5rem, 4vw, 1.8rem);
+      margin: 0.5rem 0;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      padding: 20px 15px;
+      text-align: center;
+      color: var(--text-light);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .section {
+      margin-bottom: 20px;
+      padding: 0 10px;
+    }
+
+    canvas {
+      width: 100% !important;
+      height: auto !important;
+      max-height: 250px;
+      margin-top: 10px;
+    }
+
+    .chart-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      padding: 0 5px;
+      width: 100%;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      padding: 12px;
+      color: var(--text-light);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease;
+      width: 100%;
+      margin: 0 auto;
+      opacity: 0;
+            transform: translateY(20px);
+            animation: surgir 0.5s ease-out forwards;
+        }
+        @keyframes surgir {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+    }
+
+    .card h3 {
+      font-size: clamp(0.9rem, 3.5vw, 1.1rem);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .navbar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: var(--navbar-bg);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 12px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 1000;
+    }
+
+    .nav-item {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.75rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      transition: color 0.3s ease;
+    }
+
+    .nav-item:hover {
+      color: var(--secondary-color);
+    }
+
+    .nav-icon {
+      font-size: 1.25rem;
+      margin-bottom: 4px;
+    }
+
+ 
+
+    .section-title {
+      color: var(--secondary-color);
+      font-size: clamp(0.9rem, 3.5vw, 1rem);
+      font-weight: 600;
+      margin: 10px 0 5px 0;
+      padding-bottom: 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-left: 10px;
+    }
+
+    .settings-icon {
+      font-size: clamp(1rem, 4vw, 1.2rem);
+      margin-left: 10px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .settings-icon:hover {
+      transform: rotate(30deg);
+    }
+
+    @media (min-width: 480px) {
+      .chart-container {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .card {
+        width: calc(50% - 10px);
+        max-width: 300px;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .card {
+        width: calc(50% - 15px);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .card {
+        width: calc(33.333% - 20px);
+      }
+    }
+  </style>
+</head>
+<body>
+    <header style="display: flex; align-items: center; justify-content: space-between;">
+        <h1 id="nome">Olá, <span id="user-name">Usuário</span></h1>
+        <i class="fas fa-cog" onclick="window.location.href = 'config.html';"></i>
+      </header>
+
+  <div class="section">
+    <h2 class="section-title">Resumo de Despesas</h2>
+    <div class="chart-container">
+      <div class="card">
+        <h3>Distribuição Geral</h3>
+        <canvas id="graficoPizzaDespesas"></canvas>
+      </div>
+      <div class="card">
+        <h3>Gastos por Categoria</h3>
+        <canvas id="graficoColunaGastos"></canvas>
+      </div>
+      <div class="card">
+        <h3>Evolução Diária de Gastos</h3>
+        <canvas id="graficoLinhaGastos"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">Progresso de Metas</h2>
+    <div class="chart-container">
+      <div class="card">
+        <h3>Progresso por Meta</h3>
+        <canvas id="graficoBarraMetas"></canvas>
+      </div>
+      <div class="card">
+        <h3>Distribuição por Categoria</h3>
+        <canvas id="graficoPizzaMetas"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <nav class="navbar">
+    <a href="despesas.html" class="nav-item">
+      <i class="fas fa-receipt nav-icon"></i>
+      Despesas
+    </a>
+    <a href="metas.html" class="nav-item">
+      <i class="fas fa-bullseye nav-icon"></i>
+      Metas
+    </a>
+    <a href="relatorio.html" class="nav-item active">
+      <i class="fas fa-chart-line nav-icon"></i>
+      Relatórios
+    </a>
+    <a href="investimento.html" class="nav-item">
+      <i class="fas fa-chart-pie nav-icon"></i>
+      Investimentos
+    </a>
+  </nav>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Carrega dados do usuário
+      const userName = localStorage.getItem("nome") || "Usuário";
+      document.getElementById("user-name").textContent = userName;
+
+
+      const renda = parseFloat(localStorage.getItem('monthlyIncome')) || 0;
+      const gastos = JSON.parse(localStorage.getItem('gastos')) || [];
+      const metas = JSON.parse(localStorage.getItem('metas')) || [];
+
+      gerarGraficosDespesas(gastos, renda);
+      gerarGraficosMetas(metas);
+      
+      window.addEventListener('resize', function() {
+        gerarGraficosDespesas(gastos, renda);
+        gerarGraficosMetas(metas);
+      });
+    });
+
+    function gerarGraficosDespesas(gastos, renda) {
+      const totalGasto = gastos.reduce((acc, g) => acc + g.valor, 0);
+      const saldo = renda - totalGasto;
+
+      const categorias = {};
+      const diarios = {};
+
+
+      gastos.forEach(g => {
+        categorias[g.tipo] = (categorias[g.tipo] || 0) + g.valor;
+
+        const dia = new Date(g.data).toISOString().split('T')[0];
+        diarios[dia] = (diarios[dia] || 0) + g.valor;
+      });
+
+    
+      const ctxPizza = document.getElementById('graficoPizzaDespesas').getContext('2d');
+      if (window.pizzaChart) window.pizzaChart.destroy();
+      window.pizzaChart = new Chart(ctxPizza, {
+        type: 'pie',
+        data: {
+          labels: ['Renda', 'Gasto', 'Saldo'],
+          datasets: [{
+            data: [renda, totalGasto, saldo],
+            backgroundColor: ['#00FF66', '#FF6347', '#1E90FF'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                boxWidth: 12,
+                padding: 10,
+                font: {
+                  size: 10
+                }
+              }
+            }
+          }
+        }
+      });
+
+      // Gráfico de barras - Gastos por categoria
+      const ctxColuna = document.getElementById('graficoColunaGastos').getContext('2d');
+      if (window.barChart) window.barChart.destroy();
+      window.barChart = new Chart(ctxColuna, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(categorias),
+          datasets: [{
+            label: 'Gasto por Categoria',
+            data: Object.values(categorias),
+            backgroundColor: '#FF8C00'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          indexAxis: 'y',
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            x: {
+              ticks: {
+                font: {
+                  size: 10
+                }
+              }
+            },
+            y: {
+              ticks: {
+                font: {
+                  size: 10
+                }
+              }
+            }
+          }
+        }
+      });
+
+      // Gráfico de linha - Evolução diária
+      const diasOrdenados = Object.keys(diarios).sort();
+      const ctxLinha = document.getElementById('graficoLinhaGastos').getContext('2d');
+      if (window.lineChart) window.lineChart.destroy();
+      window.lineChart = new Chart(ctxLinha, {
+        type: 'line',
+        data: {
+          labels: diasOrdenados,
+          datasets: [{
+            label: 'Gasto Diário',
+            data: diasOrdenados.map(d => diarios[d]),
+            borderColor: '#800080',
+            backgroundColor: 'rgba(218, 112, 214, 0.2)',
+            fill: true,
+            tension: 0.3,
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: {
+                boxWidth: 12,
+                font: {
+                  size: 10
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: {
+                maxRotation: 45,
+                minRotation: 45,
+                font: {
+                  size: 8
+                }
+              }
+            },
+            y: {
+              beginAtZero: true,
+              ticks: {
+                font: {
+                  size: 10
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function gerarGraficosMetas(metas) {
+      if (metas.length === 0) {
+        document.getElementById('graficoBarraMetas').parentElement.innerHTML = '<p>Nenhuma meta cadastrada</p>';
+        document.getElementById('graficoPizzaMetas').parentElement.innerHTML = '<p>Nenhuma meta cadastrada</p>';
+        return;
+      }
+
+      const progressoPorMeta = metas.map(m => ((m.valorAtual / m.valorTotal) * 100).toFixed(2));
+      const categorias = {};
+
+      metas.forEach(m => {
+        categorias[m.categoria] = (categorias[m.categoria] || 0) + m.valorTotal;
+      });
+
+      // Gráfico de barras - Progresso por meta
+      const ctxBarra = document.getElementById('graficoBarraMetas').getContext('2d');
+      if (window.barGoalsChart) window.barGoalsChart.destroy();
+      window.barGoalsChart = new Chart(ctxBarra, {
+        type: 'bar',
+        data: {
+          labels: metas.map(m => m.descricao),
+          datasets: [{
+            label: '% Concluído',
+            data: progressoPorMeta,
+            backgroundColor: '#32CD32'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 100,
+              ticks: {
+                font: {
+                  size: 10
+                }
+              }
+            },
+            x: {
+              ticks: {
+                font: {
+                  size: 10
+                }
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              labels: {
+                boxWidth: 12,
+                font: {
+                  size: 10
+                }
+              }
+            }
+          }
+        }
+      });
+
+      // Gráfico de pizza - Distribuição por categoria
+      const ctxPizzaMetas = document.getElementById('graficoPizzaMetas').getContext('2d');
+      if (window.pieGoalsChart) window.pieGoalsChart.destroy();
+      window.pieGoalsChart = new Chart(ctxPizzaMetas, {
+        type: 'pie',
+        data: {
+          labels: Object.keys(categorias),
+          datasets: [{
+            data: Object.values(categorias),
+            backgroundColor: ['#4682B4', '#9ACD32', '#FFD700', '#FF69B4', '#87CEFA']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                boxWidth: 12,
+                padding: 10,
+                font: {
+                  size: 10
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

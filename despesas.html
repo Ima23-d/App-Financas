@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>Despesas</title>
+  <style>
+    :root {
+      --primary-color: #0a9feae1;
+      --secondary-color: #00BFFF;
+      --dark-bg: #111;
+      --card-bg: rgba(46, 46, 46, 1);
+      --input-bg: rgba(55, 55, 55, 1);
+      --navbar-bg: #222;
+      --success-color: #00FF66;
+      --danger-color: #FF4500;
+      --text-light: #FFFFFF;
+      --text-muted: #888888;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    body {
+      background-color: var(--dark-bg);
+      color: var(--text-light);
+      padding: 0;
+      margin: 0;
+      min-height: 100vh;
+      padding-bottom: 70px;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      padding: 20px 15px;
+      text-align: center;
+      color: var(--text-light);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .dashboard-container {
+      padding: 15px;
+    }
+
+    .section-title {
+      color: var(--secondary-color);
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 15px 0 10px 0;
+      padding-bottom: 5px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      padding: 15px;
+      color: var(--text-light);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease;
+      opacity: 0;
+            transform: translateY(20px);
+            animation: surgir 0.5s ease-out forwards;
+        }
+        @keyframes surgir {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+
+    .card:hover {
+      transform: translateY(-3px);
+    }
+
+    .card h4 {
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .card p {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .success-text { color: var(--success-color); }
+    .danger-text { color: var(--danger-color); }
+
+    .chart-container {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      padding: 15px;
+      margin: 20px 0;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      flex-direction: row !important;
+      opacity: 0;
+            transform: translateY(20px);
+            animation: surgir 0.5s ease-out forwards;
+        }
+        @keyframes surgir {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+
+    .chart-container h3 {
+      color: var(--secondary-color);
+      font-size: 1rem;
+      margin-bottom: 10px;
+    }
+
+    .chart-placeholder {
+      height: 150px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 0;
+    }
+
+    .form-container {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px 0;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      opacity: 0;
+            transform: translateY(20px);
+            animation: surgir 0.5s ease-out forwards;
+        }
+        @keyframes surgir {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+
+    .form-container h3 {
+      color: var(--secondary-color);
+      font-size: 1.1rem;
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      background-color: var(--input-bg);
+      color: var(--text-light);
+      font-size: 0.95rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--secondary-color);
+    }
+
+    .form-control::placeholder {
+      color: var(--text-muted);
+    }
+
+    .btn {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: var(--text-light);
+      border: none;
+      padding: 12px;
+      width: 100%;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: opacity 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .navbar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: var(--navbar-bg);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 12px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 1000;
+    }
+
+    .nav-item {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.75rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      transition: color 0.3s ease;
+    }
+
+    .nav-item:hover {
+      color: var(--secondary-color);
+    }
+
+    .nav-icon {
+      font-size: 1.25rem;
+      margin-bottom: 4px;
+    }
+
+    .active {
+      color: var(--secondary-color);
+    }
+
+    .gasto-card {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      padding: 15px;
+      margin: 15px 0;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      opacity: 0;
+            transform: translateY(20px);
+            animation: surgir 0.5s ease-out forwards;
+        }
+        @keyframes surgir {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+
+    .gasto-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .gasto-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-light);
+    }
+
+    .gasto-category {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .gasto-values {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .gasto-value {
+      font-size: 1rem;
+      color: var(--danger-color);
+    }
+
+    .gasto-date {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    @media (min-width: 768px) {
+      .dashboard-container {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+    }
+  </style>
+</head>
+<body>
+    <header style="display: flex; align-items: center; justify-content: space-between;">
+      <h1 id="nome">Olá, <span id="user-name">Usuário</span></h1>
+      <i class="fas fa-cog" onclick="window.location.href = 'config.html';"></i>
+    </header>
+  
+    <div class="dashboard-container">
+      <h2 class="section-title" style="padding-right: 10px;">Visão Geral</h2>
+      
+      <div class="cards-grid">
+        <div class="card">
+          <h4><i class="fas fa-wallet" style="font-size: 18px; color: #06fc3b;"></i> Minha Renda</h4>
+          <p class="success-text" id="renda">R$ 0,00</p>
+        </div>
+        <div class="card">
+          <h4><i class="fas fa-arrow-down" style="font-size: 18px; color: red;"></i> Valor Gasto</h4>
+          <p class="danger-text" id="gasto">R$ 0,00</p>
+        </div>
+        <div class="card">
+          <h4><i class="fas fa-piggy-bank" style="font-size: 18px; color: #f6fa01;"></i> Saldo Disponível</h4>
+          <p class="success-text" id="saldo" style="color: #00BFFF;">R$ 0,00</p>
+        </div>
+        <div class="card">
+          <h4><i class="fas fa-percentage" style="font-size: 18px; color: #4906e6;"></i> Porcentagem da renda gasta</h4>
+          <p class="porcentagem" id="porcentagem">0%</p>
+        </div>
+      </div>
+  
+      <div class="chart-container">
+        <h3>Resumo Financeiro</h3>
+        <canvas id="meuGraficoPizza" width="400" height="400"></canvas>
+      </div>
+
+      <div id="gastos-recentes">
+        <h3 class="section-title">Gastos Recentes</h3>
+      </div>
+  
+      <div class="form-container">
+        <h3><i class="fas fa-plus-circle"></i> Registrar Novo Gasto</h3>
+        <div class="form-group">
+          <label for="descricao">Descrição</label>
+          <input type="text" id="descricao" class="form-control" placeholder="Ex: Mensalidade da Faculdade" />
+        </div>
+        <div class="form-group">
+          <label for="valor">Valor (R$)</label>
+          <input type="number" id="valor" class="form-control" placeholder="0,00" step="0.01" />
+        </div>
+        <div class="form-group">
+          <label for="tipo">Categoria</label>
+          <select id="tipo" class="form-control">
+            <option value="">Selecione uma categoria</option>
+            <option value="Saúde">Saúde</option>
+            <option value="Alimentação">Alimentação</option>
+            <option value="Transporte">Transporte</option>
+            <option value="Educação">Educação</option>
+            <option value="Lazer">Lazer</option>
+            <option value="Acessórios">Acessórios</option>
+            <option value="Roupas">Roupas</option>
+            <option value="Objetos">Objetos</option>
+            <option value="Contas">Contas</option>
+            <option value="Outros">Outros</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="data">Data</label>
+          <input type="date" id="data" class="form-control" />
+        </div>
+        <button class="btn" onclick="enviarGasto()">
+          <i class="fas fa-paper-plane"></i> Registrar Gasto
+        </button>
+      </div>
+    </div>
+  
+
+    <nav class="navbar">
+      <a href="despesas.html" class="nav-item">
+          <i class="fas fa-receipt nav-icon"></i>
+          Despesas
+        </a>
+      <!-- <a href="dashboard.html" class="nav-item active">
+        <i class="fas fa-tachometer-alt nav-icon"></i>
+        Dashboard
+      </a> -->
+      <a href="metas.html" class="nav-item">
+        <i class="fas fa-bullseye nav-icon"></i>
+        Metas
+      </a>
+      <a href="relatorio.html" class="nav-item">
+        <i class="fas fa-chart-line nav-icon"></i>
+        Relatórios
+      </a>
+      <a href="investimento.html" class="nav-item">
+        <i class="fas fa-chart-pie nav-icon"></i>
+        Investimentos
+      </a>
+    </nav>
+  
+    <script>
+  /**
+ * Este código implementa um sistema de gestão financeira pessoal que:
+ * 1. Armazena e exibe a renda mensal do usuário
+ * 2. Permite cadastrar gastos
+ * 3. Calcula saldo e porcentagem de gastos
+ * 4. Exibe um gráfico de pizza com o resumo financeiro
+ * 5. Mostra os gastos recentes
+ * 
+ * Todos os dados são persistidos no localStorage do navegador
+ */
+
+// Quando o DOM estiver completamente carregado, executa a função principal
+document.addEventListener('DOMContentLoaded', function () {
+    /**
+     * 1. RECUPERAÇÃO DE DADOS DO USUÁRIO
+     * Busca os dados armazenados no localStorage ou usa valores padrão
+     */
+    const userName = localStorage.getItem("nome") || "Usuário"; // Nome do usuário ou "Usuário" se não existir
+    document.getElementById("user-name").textContent = userName; // Exibe o nome na interface
+    
+    // Recupera os valores financeiros do localStorage
+    let renda = parseFloat(localStorage.getItem('monthlyIncome')) || 0; // Renda mensal (0 se não existir)
+    let gastos = JSON.parse(localStorage.getItem('gastos')) || []; // Lista de gastos (array vazio se não existir)
+    let totalGasto = parseFloat(localStorage.getItem('totalGasto')) || 0; // Soma total de gastos (0 se não existir)
+    
+    // Calcula valores derivados
+    let saldo = renda - totalGasto; // Saldo disponível
+    let porcentagem = renda > 0 ? (totalGasto / renda) * 100 : 0; // % da renda gasta (evita divisão por zero)
+    
+    /**
+     * 2. ATUALIZAÇÃO DA INTERFACE
+     */
+    atualizarUI(renda, totalGasto, saldo, porcentagem); // Atualiza os valores exibidos na tela
+    
+    // Configura a data atual no campo de data (formato YYYY-MM-DD)
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('data').value = today;
+
+    // Carrega os 5 gastos mais recentes
+    carregarGastosRecentes(gastos, renda);
+    
+    /**
+     * 3. CRIAÇÃO DO GRÁFICO DE PIZZA
+     * Usando a biblioteca Chart.js para visualização dos dados
+     */
+    const ctx = document.getElementById('meuGraficoPizza').getContext('2d');
+    const meuGraficoPizza = new Chart(ctx, {
+        type: 'pie', // Tipo de gráfico (pizza)
+        data: {
+            labels: ['Renda', 'Gasto', 'Saldo'], // Legendas
+            datasets: [{
+                label: 'Resumo Financeiro',
+                data: [renda, totalGasto, saldo], // Valores a serem exibidos
+                backgroundColor: [ // Cores de preenchimento
+                    '#00FF66', // Verde para renda
+                    '#FF4500', // Vermelho para gastos
+                    '#00BFFF'  // Azul para saldo
+                ],
+                borderColor: [ // Cores das bordas (mesmas cores)
+                    '#00FF66',
+                    '#FF4500',
+                    '#00BFFF'
+                ],
+                borderWidth: 1 // Largura da borda
+            }]
+        },
+        options: {
+            responsive: true, // Gráfico responsivo
+            plugins: {
+                legend: {
+                    position: 'bottom' // Posição da legenda
+                },
+                title: {
+                    display: true,
+                    text: 'Resumo Financeiro' // Título do gráfico
+                }
+            }
+        }
+    });
+});
+
+/**
+ * FUNÇÃO: carregarGastosRecentes
+ * Objetivo: Exibe os 5 gastos mais recentes na interface
+ * Parâmetros:
+ *   - gastos: Array com todos os gastos do usuário
+ *   - renda: Valor da renda mensal para cálculo de porcentagem
+ */
+function carregarGastosRecentes(gastos, renda) {
+    const gastosContainer = document.getElementById('gastos-recentes');
+    
+    // Remove todas as notificações de gastos existentes
+    const notificacoes = document.querySelectorAll('.gasto-card');
+    notificacoes.forEach(notificacao => notificacao.remove());
+    
+    // Ordena os gastos do mais recente para o mais antigo (pelo timestamp)
+    gastos.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)); 
+    
+    // Pega apenas os 5 primeiros gastos (os mais recentes)
+    const gastosRecentes = gastos.slice(0, 5);
+    
+    // Para cada gasto recente, cria um card na interface
+    gastosRecentes.forEach(gasto => {
+        adicionarNotificacaoGasto(gasto, renda);
+    });
+}
+
+/**
+ * FUNÇÃO: adicionarNotificacaoGasto
+ * Objetivo: Cria o HTML para um card de gasto e insere na interface
+ * Parâmetros:
+ *   - gasto: Objeto contendo os dados do gasto
+ *   - renda: Valor da renda mensal para cálculo de porcentagem
+ */
+function adicionarNotificacaoGasto(gasto, renda) {
+    // Calcula qual % da renda este gasto representa
+    const porcentagemGasto = renda > 0 ? (gasto.valor / renda) * 100 : 0;
+    
+    // Cria o HTML do card do gasto
+    const gastoHTML = `
+        <div class="gasto-card">
+            <div class="gasto-header">
+                <div class="gasto-title">${gasto.descricao}</div>
+                <div class="gasto-category">${gasto.tipo}</div>
+            </div>
+            <div class="gasto-values">
+                <div class="gasto-value">R$ ${gasto.valor.toFixed(2)}</div>
+                <div class="gasto-date">${formatarData(gasto.data)}</div>
+            </div>
+        </div>
+    `;
+    
+    // Insere o card após o título "Gastos Recentes"
+    const titulo = document.querySelector('#gastos-recentes h3');
+    titulo.insertAdjacentHTML('afterend', gastoHTML);
+}
+
+/**
+ * FUNÇÃO: atualizarUI
+ * Objetivo: Atualiza os valores exibidos na interface
+ * Parâmetros:
+ *   - renda: Valor da renda mensal
+ *   - totalGasto: Soma total dos gastos
+ *   - saldo: Saldo disponível (renda - gastos)
+ *   - porcentagem: % da renda que foi gasta
+ */
+function atualizarUI(renda, totalGasto, saldo, porcentagem) {
+    // Atualiza cada elemento na interface com os valores formatados
+    document.getElementById('renda').textContent = `R$ ${renda.toFixed(2)}`;
+    document.getElementById('gasto').textContent = `R$ ${totalGasto.toFixed(2)}`;
+    document.getElementById('saldo').textContent = `R$ ${saldo.toFixed(2)}`;
+    document.getElementById('porcentagem').textContent = `${porcentagem.toFixed(2)}%`;
+}
+
+/**
+ * FUNÇÃO: formatarData
+ * Objetivo: Converte uma data no formato ISO (YYYY-MM-DD) para DD/MM/YYYY
+ * Parâmetro: dataISO - String com a data no formato ISO
+ * Retorno: String com a data formatada
+ */
+function formatarData(dataISO) {
+    const data = new Date(dataISO);
+    const dia = String(data.getDate()).padStart(2, '0'); // Dia com 2 dígitos
+    const mes = String(data.getMonth() + 1).padStart(2, '0'); // Mês com 2 dígitos (janeiro é 0)
+    const ano = data.getFullYear();
+    return `${dia}/${mes}/${ano}`;
+}
+
+/**
+ * FUNÇÃO: enviarGasto
+ * Objetivo: Processa o formulário de cadastro de novo gasto
+ */
+function enviarGasto() {
+    // 1. Obtém os valores dos campos do formulário
+    const descricao = document.getElementById('descricao').value.trim();
+    const valor = parseFloat(document.getElementById('valor').value);
+    const tipo = document.getElementById('tipo').value;
+    const data = document.getElementById('data').value;
+    
+    // 2. Validação dos campos
+    if (!descricao || !valor || valor <= 0 || !tipo || !data) {
+        alert("Preencha todos os campos corretamente.");
+        return;
+    }
+    
+    // 3. Recupera os dados atuais do localStorage
+    let renda = parseFloat(localStorage.getItem('monthlyIncome')) || 0;
+    let gastos = JSON.parse(localStorage.getItem('gastos')) || [];
+    let totalGasto = parseFloat(localStorage.getItem('totalGasto')) || 0;
+    
+    // 4. Cria o objeto do novo gasto com timestamp atual
+    const novoGasto = {
+        descricao,
+        valor,
+        tipo,
+        data,
+        timestamp: new Date().getTime() // Marca temporal para ordenação
+    };
+
+    // 5. Atualiza as listas e totais
+    gastos.unshift(novoGasto); // Adiciona no início do array
+    totalGasto += valor; // Incrementa o total gasto
+    const saldo = renda - totalGasto; 
+    const porcentagem = renda > 0 ? (totalGasto / renda) * 100 : 0;
+    
+    // 6. Persiste os dados atualizados no localStorage
+    localStorage.setItem('gastos', JSON.stringify(gastos));
+    localStorage.setItem('totalGasto', totalGasto.toString());
+    
+    // 7. Atualiza a interface
+    atualizarUI(renda, totalGasto, saldo, porcentagem);
+    adicionarNotificacaoGasto(novoGasto, renda);
+    
+    // 8. Limpa o formulário
+    document.getElementById('descricao').value = '';
+    document.getElementById('valor').value = '';
+    document.getElementById('tipo').selectedIndex = 0;
+    document.getElementById('data').value = new Date().toISOString().split('T')[0];
+    
+    // 9. Atualiza o gráfico com os novos valores
+    const chart = Chart.getChart("meuGraficoPizza");
+    chart.data.datasets[0].data = [renda, totalGasto, saldo];
+    chart.update();
+}
+</script>
+</body>
+</html>

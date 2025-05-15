@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <title>Metas Financeiras</title>
+  <style>
+    :root {
+      --primary-color: #0a9feae1;
+      --secondary-color: #00BFFF;
+      --dark-bg: #111;
+      --card-bg: rgba(46, 46, 46, 1);
+      --input-bg: rgba(55, 55, 55, 1);
+      --navbar-bg: #222;
+      --success-color: #00FF66;
+      --danger-color: #FF4500;
+      --warning-color: #FFA500;
+      --text-light: #FFFFFF;
+      --text-muted: #888888;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    body {
+      background-color: var(--dark-bg);
+      color: var(--text-light);
+      padding: 0;
+      margin: 0;
+      min-height: 100vh;
+      padding-bottom: 70px;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      padding: 20px 15px;
+      text-align: center;
+      color: var(--text-light);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .dashboard-container {
+      padding: 15px;
+    }
+
+    .section-title {
+      color: var(--secondary-color);
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 15px 0 10px 0;
+      padding-bottom: 5px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      padding: 15px;
+      color: var(--text-light);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+    }
+
+    .card h4 {
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .card p {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .success-text { color: var(--success-color); }
+    .danger-text { color: var(--danger-color); }
+    .warning-text { color: var(--warning-color); }
+
+    .form-container {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px 0;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      opacity: 0;
+            transform: translateY(20px);
+            animation: surgir 0.5s ease-out forwards;
+        }
+        @keyframes surgir {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+
+    .form-container h3 {
+      color: var(--secondary-color);
+      font-size: 1.1rem;
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      background-color: var(--input-bg);
+      color: var(--text-light);
+      font-size: 0.95rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--secondary-color);
+    }
+
+    .form-control::placeholder {
+      color: var(--text-muted);
+    }
+
+    .btn {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: var(--text-light);
+      border: none;
+      padding: 12px;
+      width: 100%;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: opacity 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .btn-danger {
+      background: var(--danger-color);
+    }
+
+    .btn-warning {
+      background: var(--warning-color);
+    }
+
+    .navbar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: var(--navbar-bg);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 12px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 1000;
+    }
+
+    .nav-item {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.75rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      transition: color 0.3s ease;
+    }
+
+    .nav-item:hover {
+      color: var(--secondary-color);
+    }
+
+    .nav-icon {
+      font-size: 1.25rem;
+      margin-bottom: 4px;
+    }
+
+ 
+    .meta-card {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      padding: 15px;
+      margin: 15px 0;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      position: relative;
+      opacity: 0;
+            transform: translateY(20px);
+            animation: surgir 0.5s ease-out forwards;
+        }
+        @keyframes surgir {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .meta-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .meta-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-light);
+      max-width: 70%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .meta-category {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .meta-values {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .meta-value {
+      font-size: 1rem;
+    }
+
+    .meta-progress {
+      height: 6px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+
+    .meta-progress-bar {
+      height: 100%;
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      border-radius: 3px;
+    }
+
+    .meta-days {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    .meta-actions {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .meta-action-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: color 0.3s ease;
+      padding: 5px;
+    }
+
+    .meta-action-btn:hover {
+      color: var(--secondary-color);
+    }
+
+    .edit-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .edit-modal-content {
+      background-color: var(--card-bg);
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+      animation: modalFadeIn 0.3s ease;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .modal-title {
+      color: var(--secondary-color);
+      font-size: 1.2rem;
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0 5px;
+    }
+
+    .progress-text {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 5px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 30px 0;
+      color: var(--text-muted);
+    }
+
+    .empty-state i {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+      opacity: 0.5;
+    }
+
+    @media (min-width: 768px) {
+      .dashboard-container {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+    }
+  </style>
+</head>
+<body>
+    <header style="display: flex; align-items: center; justify-content: space-between;">
+      <h1 id="nome">Olá, <span id="user-name">Usuário</span></h1>
+      <i class="fas fa-cog" onclick="window.location.href = 'config.html';" style="cursor: pointer;"></i>
+    </header>
+  
+    <div class="dashboard-container">
+      <h2 class="section-title" style="padding-right: 10px;">Minhas Metas</h2>
+      
+      <div id="metas-container">
+       
+        <div class="empty-state" id="empty-state" style="display: none;">
+          <i class="fas fa-bullseye"></i>
+          <p>Você ainda não tem metas cadastradas</p>
+          <p>Adicione sua primeira meta usando o formulário abaixo</p>
+        </div>
+      </div>
+
+      <div class="edit-modal" id="editModal">
+        <div class="edit-modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title">Editar Meta</h3>
+            <button class="close-modal" onclick="closeEditModal()">&times;</button>
+          </div>
+          <div class="form-group">
+            <label for="edit-descricao">Descrição</label>
+            <input type="text" id="edit-descricao" class="form-control" disabled />
+          </div>
+          <div class="form-group">
+            <label for="edit-valor-atual">Valor Atual (R$)</label>
+            <input type="number" id="edit-valor-atual" class="form-control" placeholder="0,00" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label for="edit-valor-total">Valor Total (R$)</label>
+            <input type="number" id="edit-valor-total" class="form-control" placeholder="0,00" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label for="edit-prazo">Prazo (dias)</label>
+            <input type="number" id="edit-prazo" class="form-control" placeholder="Ex: 30" />
+          </div>
+          <button class="btn" onclick="saveEditedMeta()">
+            <i class="fas fa-save"></i> Salvar Alterações
+          </button>
+          <button class="btn btn-danger" style="margin-top: 10px;" onclick="deleteCurrentMeta()">
+            <i class="fas fa-trash-alt"></i> Excluir Meta
+          </button>
+        </div>
+      </div>
+
+      <div class="form-container">
+        <h3><i class="fas fa-plus-circle"></i> Adicionar Nova Meta</h3>
+        <div class="form-group">
+          <label for="meta-descricao">Descrição da Meta</label>
+          <input type="text" id="meta-descricao" class="form-control" placeholder="Ex: Comprar um novo celular" />
+        </div>
+        <div class="form-group">
+          <label for="meta-categoria">Categoria</label>
+          <select id="meta-categoria" class="form-control">
+            <option value="">Selecione uma categoria</option>
+            <option value="Objeto">Objeto</option>
+            <option value="Viagem">Viagem</option>
+            <option value="Investimento">Investimento</option>
+            <option value="Acessório">Acessório</option>
+            <option value="Vestimentas">Vestimentas</option>
+            <option value="Outro">Outro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="meta-valor-atual">Valor Atual (R$)</label>
+          <input type="number" id="meta-valor-atual" class="form-control" placeholder="0,00" step="0.01" value="0" />
+        </div>
+        <div class="form-group">
+          <label for="meta-valor-total">Valor Total (R$)</label>
+          <input type="number" id="meta-valor-total" class="form-control" placeholder="0,00" step="0.01" />
+        </div>
+        <div class="form-group">
+          <label for="meta-prazo">Prazo (dias)</label>
+          <input type="number" id="meta-prazo" class="form-control" placeholder="Ex: 30" />
+        </div>
+        <button class="btn" onclick="adicionarMeta()">
+          <i class="fas fa-paper-plane"></i> Adicionar Meta
+        </button>
+      </div>
+    </div>
+
+    <nav class="navbar">
+      <a href="despesas.html" class="nav-item">
+        <i class="fas fa-receipt nav-icon"></i>
+        Despesas
+      </a>
+      <a href="metas.html" class="nav-item active">
+        <i class="fas fa-bullseye nav-icon"></i>
+        Metas
+      </a>
+      <a href="relatorio.html" class="nav-item">
+        <i class="fas fa-chart-line nav-icon"></i>
+        Relatórios
+      </a>
+      <a href="investimento.html" class="nav-item">
+        <i class="fas fa-chart-pie nav-icon"></i>
+        Investimentos
+      </a>
+    </nav>
+  
+    <script>
+      let currentEditingIndex = -1;
+    
+      document.addEventListener('DOMContentLoaded', function () {
+        const userName = localStorage.getItem("nome") || "Usuário";
+        document.getElementById("user-name").textContent = userName;
+        carregarMetas();
+      });
+    
+      function carregarMetas() {
+        const metas = JSON.parse(localStorage.getItem('metas')) || [];
+        const metasContainer = document.getElementById('metas-container');
+        const emptyState = document.getElementById('empty-state');
+    
+        metasContainer.innerHTML = '';
+    
+        if (metas.length === 0) {
+          emptyState.style.display = 'block';
+          return;
+        } else {
+          emptyState.style.display = 'none';
+        }
+    
+        metas.forEach((meta, index) => {
+          const valorAtual = parseFloat(meta.valorAtual) || 0;
+          const valorTotal = parseFloat(meta.valorTotal) || 1;
+          const progresso = (valorAtual / valorTotal) * 100;
+          const porcentagem = Math.min(100, Math.max(0, progresso)).toFixed(2);
+          const prazo = parseInt(meta.prazo) || 0;
+    
+          const metaHTML = `
+            <div class="meta-card" data-index="${index}">
+              <div class="meta-actions"></div>
+              <div class="meta-header">
+                <button class="meta-action-btn" onclick="openEditModal(${index})" title="Editar">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <div class="meta-title" title="${meta.descricao}">${meta.descricao}</div>
+                <div class="meta-category">${meta.categoria}</div>
+              </div>
+              <div class="meta-values">
+                <div class="meta-value">R$${valorAtual.toFixed(2)}</div>
+                <div class="meta-value">R$${valorTotal.toFixed(2)}</div>
+              </div>
+              <div class="meta-progress">
+                <div class="meta-progress-bar" style="width: ${porcentagem}%"></div>
+              </div>
+              <div class="progress-text">${porcentagem}% concluído</div>
+              <div class="meta-days">${prazo} dias restantes</div>
+            </div>
+          `;
+    
+          metasContainer.insertAdjacentHTML('beforeend', metaHTML);
+        });
+      }
+    
+      function openEditModal(index) {
+        const metas = JSON.parse(localStorage.getItem('metas')) || [];
+        if (index >= 0 && index < metas.length) {
+          currentEditingIndex = index;
+          const meta = metas[index];
+    
+          document.getElementById('edit-descricao').value = meta.descricao || '';
+          document.getElementById('edit-valor-atual').value = parseFloat(meta.valorAtual) || 0;
+          document.getElementById('edit-valor-total').value = parseFloat(meta.valorTotal) || '';
+          document.getElementById('edit-prazo').value = parseInt(meta.prazo) || '';
+    
+          document.getElementById('editModal').style.display = 'flex';
+        }
+      }
+    
+      function closeEditModal() {
+        document.getElementById('editModal').style.display = 'none';
+        currentEditingIndex = -1;
+      }
+    
+      function saveEditedMeta() {
+        const metas = JSON.parse(localStorage.getItem('metas')) || [];
+        if (currentEditingIndex >= 0 && currentEditingIndex < metas.length) {
+          const novoValorAtual = parseFloat(document.getElementById('edit-valor-atual').value);
+          const novoValorTotal = parseFloat(document.getElementById('edit-valor-total').value);
+          const novoPrazo = parseInt(document.getElementById('edit-prazo').value);
+          const novaDescricao = document.getElementById('edit-descricao').value.trim();
+    
+          if (!novaDescricao || isNaN(novoValorAtual) || isNaN(novoValorTotal) || isNaN(novoPrazo)) {
+            alert("Preencha todos os campos corretamente.");
+            return;
+          }
+    
+          if (novoValorAtual < 0 || novoValorTotal <= 0 || novoPrazo <= 0) {
+            alert("Valores e prazo devem ser positivos.");
+            return;
+          }
+    
+          if (novoValorAtual > novoValorTotal) {
+            alert("O valor atual não pode ser maior que o valor total.");
+            return;
+          }
+    
+          metas[currentEditingIndex] = {
+            ...metas[currentEditingIndex],
+            descricao: novaDescricao,
+            valorAtual: novoValorAtual,
+            valorTotal: novoValorTotal,
+            prazo: novoPrazo
+          };
+    
+          localStorage.setItem('metas', JSON.stringify(metas));
+          closeEditModal();
+          carregarMetas();
+          alert("Meta atualizada com sucesso!");
+        }
+      }
+    
+      function deleteCurrentMeta() {
+        const metas = JSON.parse(localStorage.getItem('metas')) || [];
+        if (currentEditingIndex >= 0 && currentEditingIndex < metas.length) {
+          if (confirm("Tem certeza que deseja excluir esta meta? Esta ação não pode ser desfeita.")) {
+            metas.splice(currentEditingIndex, 1);
+            localStorage.setItem('metas', JSON.stringify(metas));
+            closeEditModal();
+            carregarMetas();
+          }
+        }
+      }
+    
+      function adicionarMeta() {
+        const descricao = document.getElementById('meta-descricao').value.trim();
+        const categoria = document.getElementById('meta-categoria').value;
+        const valorAtual = parseFloat(document.getElementById('meta-valor-atual').value) || 0;
+        const valorTotal = parseFloat(document.getElementById('meta-valor-total').value);
+        const prazo = parseInt(document.getElementById('meta-prazo').value);
+    
+        if (!descricao || !categoria || isNaN(valorTotal) || isNaN(prazo)) {
+          alert("Preencha todos os campos obrigatórios.");
+          return;
+        }
+    
+        if (valorAtual < 0 || valorTotal <= 0 || prazo <= 0) {
+          alert("Valores e prazo devem ser positivos.");
+          return;
+        }
+    
+        if (valorAtual > valorTotal) {
+          alert("O valor atual não pode ser maior que o valor total.");
+          return;
+        }
+    
+        const metas = JSON.parse(localStorage.getItem('metas')) || [];
+    
+        const novaMeta = {
+          descricao,
+          categoria,
+          valorAtual,
+          valorTotal,
+          prazo,
+          dataCriacao: new Date().toISOString()
+        };
+    
+        metas.push(novaMeta);
+        localStorage.setItem('metas', JSON.stringify(metas));
+    
+        carregarMetas();
+        limparFormulario();
+        alert("Meta adicionada com sucesso!");
+      }
+    
+      function limparFormulario() {
+        document.getElementById('meta-descricao').value = '';
+        document.getElementById('meta-categoria').selectedIndex = 0;
+        document.getElementById('meta-valor-atual').value = '0';
+        document.getElementById('meta-valor-total').value = '';
+        document.getElementById('meta-prazo').value = '';
+      }
+    </script>
+    
+</body>
+</html>

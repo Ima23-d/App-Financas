@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>Investimentos</title>
+  <style>
+    :root {
+      --primary-color: #0a9feae1;
+      --secondary-color: #00BFFF;
+      --dark-bg: #111;
+      --card-bg: rgba(46, 46, 46, 1);
+      --input-bg: rgba(55, 55, 55, 1);
+      --navbar-bg: #222;
+      --success-color: #00FF66;
+      --danger-color: #FF4500;
+      --text-light: #FFFFFF;
+      --text-muted: #888888;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    body {
+      background-color: var(--dark-bg);
+      color: var(--text-light);
+      padding: 0;
+      margin: 0;
+      min-height: 100vh;
+      padding-bottom: 70px;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      padding: 20px 15px;
+      text-align: center;
+      color: var(--text-light);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .dashboard-container {
+      padding: 15px;
+    }
+
+    .section-title {
+      color: var(--secondary-color);
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 15px 0 10px 0;
+      padding-bottom: 5px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      padding: 15px;
+      color: var(--text-light);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+    }
+
+    .card h4 {
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .card p {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .success-text { color: var(--success-color); }
+    .danger-text { color: var(--danger-color); }
+
+    .chart-container {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      padding: 15px;
+      margin: 20px 0;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      flex-direction: row !important;
+    }
+
+    .chart-container h3 {
+      color: var(--secondary-color);
+      font-size: 1rem;
+      margin-bottom: 10px;
+    }
+
+    .chart-placeholder {
+      height: 150px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 0;
+    }
+
+    .form-container {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px 0;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      opacity: 0;
+            transform: translateY(20px);
+            animation: surgir 0.5s ease-out forwards;
+        }
+        @keyframes surgir {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .form-container h3 {
+      color: var(--secondary-color);
+      font-size: 1.1rem;
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      background-color: var(--input-bg);
+      color: var(--text-light);
+      font-size: 0.95rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--secondary-color);
+    }
+
+    .form-control::placeholder {
+      color: var(--text-muted);
+    }
+
+    .btn {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: var(--text-light);
+      border: none;
+      padding: 12px;
+      width: 100%;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: opacity 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .navbar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: var(--navbar-bg);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 12px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 1000;
+    }
+
+    .nav-item {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.75rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      transition: color 0.3s ease;
+    }
+
+    .nav-item:hover {
+      color: var(--secondary-color);
+    }
+
+    .nav-icon {
+      font-size: 1.25rem;
+      margin-bottom: 4px;
+    }
+
+    .active {
+      color: var(--secondary-color);
+    }
+
+    .acao-card {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      padding: 15px;
+      margin: 15px 0;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      opacity: 0;
+            transform: translateY(20px);
+            animation: surgir 0.5s ease-out forwards;
+        }
+        @keyframes surgir {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .acao-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .acao-codigo {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-light);
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .acao-empresa {
+      font-size: 0.95rem;
+      color: var(--text-light);
+    }
+
+    .acao-valor {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 5px 0;
+    }
+
+    .acao-variacao {
+      font-size: 0.85rem;
+      border-radius: 3px;
+      width: 15%;
+    }
+
+    .positivo {
+      background-color: rgba(0, 255, 102, 0.2);
+      color: var(--success-color);
+    }
+
+    .negativo {
+      background-color: rgba(255, 69, 0, 0.2);
+      color: var(--danger-color);
+    }
+
+    .recomendacao-card {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      padding: 15px;
+      margin: 15px 0;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      border-left: 4px solid var(--secondary-color);
+    }
+
+    .recomendacao-titulo {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--secondary-color);
+      margin-bottom: 10px;
+    }
+
+    .recomendacao-descricao {
+      font-size: 0.9rem;
+      color: var(--text-light);
+      margin-bottom: 10px;
+    }
+
+    .recomendacao-detalhes {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    @media (min-width: 768px) {
+      .dashboard-container {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+    }
+  </style>
+</head>
+<body>
+    <header style="display: flex; align-items: center; justify-content: space-between;">
+      <h1 id="nome">Olá, <span id="user-name">Usuário</span></h1>
+      <i class="fas fa-cog" onclick="window.location.href = 'config.html';"></i>
+    </header>
+  
+    <div class="dashboard-container">
+      <h2 class="section-title" style="padding-right: 10px;">Mercado Hoje</h2>
+      
+      <div id="acoes-container">
+
+      </div>
+
+      <div class="form-container">
+        <h3><i class="fas fa-chart-line"></i> Recomendação de Investimentos</h3>
+        <div class="form-group">
+          <label for="investimento-salario">Salário Mensal (R$)</label>
+          <input type="number" id="investimento-salario" class="form-control" placeholder="Ex: 3000" step="0.01" />
+        </div>
+        <div class="form-group">
+          <label for="investimento-valor">Valor para Investir (R$)</label>
+          <input type="number" id="investimento-valor" class="form-control" placeholder="Ex: 1000" step="0.01" />
+        </div>
+        <div class="form-group">
+          <label for="investimento-prazo">Prazo do Investimento</label>
+          <input type="date" id="investimento-prazo" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label for="investimento-retorno">Retorno Esperado (%)</label>
+          <input type="number" id="investimento-retorno" class="form-control" placeholder="Ex: 10" step="0.1" />
+        </div>
+        <div class="form-group">
+          <label for="investimento-perfil">Perfil de Risco</label>
+          <select id="investimento-perfil" class="form-control">
+            <option value="conservador">Conservador</option>
+            <option value="moderado" selected>Moderado</option>
+            <option value="arrojado">Arrojado</option>
+          </select>
+        </div>
+        <button class="btn" onclick="gerarRecomendacao()">
+          <i class="fas fa-search"></i> Obter Recomendação
+        </button>
+      </div>
+
+      <div id="recomendacoes-container" style="display: none;">
+        <h2 class="section-title">Recomendações para Você</h2>
+        <div id="recomendacoes-content">
+          <!-- Recomendações serão carregadas aqui -->
+        </div>
+      </div>
+    </div>
+  
+    <nav class="navbar">
+        <a href="despesas.html" class="nav-item">
+            <i class="fas fa-receipt nav-icon"></i>
+            Despesas
+          </a>
+        <!-- <a href="dashboard.html" class="nav-item active">
+          <i class="fas fa-tachometer-alt nav-icon"></i>
+          Dashboard
+        </a> -->
+        <a href="metas.html" class="nav-item">
+          <i class="fas fa-bullseye nav-icon"></i>
+          Metas
+        </a>
+        <a href="relatorio.html" class="nav-item">
+          <i class="fas fa-chart-line nav-icon"></i>
+          Relatórios
+        </a>
+        <a href="investimento.html" class="nav-item">
+          <i class="fas fa-chart-pie nav-icon"></i>
+          Investimentos
+        </a>
+      </nav>
+  
+    <script>
+      // Dados simulados de ações (substituir por API real em produção)
+      const acoes = [
+        { codigo: "PETR4", empresa: "Petrobras", valor: 32.45, variacao: 1.25 },
+        { codigo: "VALE3", empresa: "Vale", valor: 62.30, variacao: -0.75 },
+        { codigo: "ITUB4", empresa: "Itaú Unibanco", valor: 28.90, variacao: 0.50 },
+        { codigo: "BBDC4", empresa: "Bradesco", valor: 14.20, variacao: -1.20 },
+        { codigo: "BBAS3", empresa: "Banco do Brasil", valor: 45.60, variacao: 0.80 },
+        { codigo: "WEGE3", empresa: "WEG", valor: 36.75, variacao: 2.10 },
+        { codigo: "MGLU3", empresa: "Magazine Luiza", valor: 2.45, variacao: -0.15 },
+        { codigo: "LREN3", empresa: "Lojas Renner", valor: 24.30, variacao: 0.40 }
+      ];
+
+      document.addEventListener('DOMContentLoaded', function () {
+        const userName = localStorage.getItem("nome") || "Usuário";
+        document.getElementById("user-name").textContent = userName;
+        
+        carregarAcoes();
+        
+        // Definir data mínima como amanhã
+        const hoje = new Date();
+        const amanha = new Date(hoje);
+        amanha.setDate(hoje.getDate() + 1);
+        
+        const dataInput = document.getElementById('investimento-prazo');
+        dataInput.min = amanha.toISOString().split('T')[0];
+      });
+      
+      function carregarAcoes() {
+        const container = document.getElementById('acoes-container');
+        container.innerHTML = '';
+        
+        // Pegar 5 ações aleatórias
+        const acoesAleatorias = [...acoes].sort(() => 0.5 - Math.random()).slice(0, 5);
+        
+        acoesAleatorias.forEach(acao => {
+          const variacaoPositiva = acao.variacao >= 0;
+          
+          const acaoHTML = `
+            <div class="acao-card">
+              <div class="acao-header">
+                <div class="acao-codigo">${acao.codigo}</div>
+                <div class="acao-empresa">${acao.empresa}</div>
+              </div>
+              <div class="acao-valor">R$${acao.valor.toFixed(2)}</div>
+              <div class="acao-variacao ${variacaoPositiva ? 'positivo' : 'negativo'}">
+                ${variacaoPositiva ? '+' : ''}${acao.variacao.toFixed(2)}%
+              </div>
+            </div>
+          `;
+          
+          container.insertAdjacentHTML('beforeend', acaoHTML);
+        });
+      }
+      
+      async function gerarRecomendacao() {
+        const salarioInput = document.getElementById('investimento-salario');
+        const salario = parseFloat(salarioInput.value);
+        salarioInput.value = localStorage.getItem('monthlyIncome') || '';
+        const valorInvestir = parseFloat(document.getElementById('investimento-valor').value);
+        const prazo = document.getElementById('investimento-prazo').value;
+        const retorno = parseFloat(document.getElementById('investimento-retorno').value);
+        const perfil = document.getElementById('investimento-perfil').value;
+        
+        if (isNaN(salario)) {
+          alert("Informe seu salário mensal.");
+          return;
+        }
+        
+        if (isNaN(valorInvestir) || valorInvestir <= 0) {
+          alert("Informe um valor válido para investir.");
+          return;
+        }
+        
+        if (!prazo) {
+          alert("Selecione um prazo para o investimento.");
+          return;
+        }
+        
+        if (isNaN(retorno)) {
+          alert("Informe o retorno esperado.");
+          return;
+        }
+        
+
+        const btn = document.querySelector('.btn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analisando...';
+        btn.disabled = true;
+        
+        try {
+ 
+          const recomendacoes = await simularRecomendacao(salario, valorInvestir, prazo, retorno, perfil);
+          
+   
+          exibirRecomendacoes(recomendacoes);
+          
+          document.getElementById('recomendacoes-container').style.display = 'block';
+          
+        } catch (error) {
+          console.error("Erro ao gerar recomendações:", error);
+          alert("Ocorreu um erro ao gerar as recomendações. Tente novamente.");
+        } finally {
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+        }
+      }
+      
+      function simularRecomendacao(salario, valorInvestir, prazo, retorno, perfil) {
+        return new Promise((resolve) => {
+          
+          setTimeout(() => {
+          
+            const recomendacoes = [];
+            
+    
+            let acoesRecomendadas = [];
+            if (perfil === 'conservador') {
+              acoesRecomendadas = ["ITUB4", "BBAS3", "BBDC4", "VALE3", "PETR4"];
+            } else if (perfil === 'moderado') {
+              acoesRecomendadas = ["WEGE3", "ITUB4", "VALE3", "LREN3", "PETR4"];
+            } else {
+              acoesRecomendadas = ["MGLU3", "WEGE3", "LREN3", "VALE3", "PETR4"];
+            }
+            
+         
+            acoesRecomendadas.forEach(codigo => {
+              const acao = acoes.find(a => a.codigo === codigo);
+              if (acao) {
+              
+                let projecao;
+                if (perfil === 'conservador') {
+                  projecao = (retorno * 0.8) + (Math.random() * 5);
+                } else if (perfil === 'moderado') {
+                  projecao = retorno + (Math.random() * 8 - 2);
+                } else {
+                  projecao = (retorno * 1.2) + (Math.random() * 10 - 3);
+                }
+                
+                recomendacoes.push({
+                  codigo: acao.codigo,
+                  empresa: acao.empresa,
+                  valorAtual: acao.valor,
+                  recomendacao: perfil === 'conservador' ? 'COMPRAR' : (perfil === 'moderado' ? 'MANTER' : 'AVALIAR'),
+                  descricao: getDescricaoRecomendacao(acao.codigo, perfil),
+                  projecaoRetorno: projecao.toFixed(1)
+                });
+              }
+            });
+      
+            recomendacoes.sort((a, b) => b.projecaoRetorno - a.projecaoRetorno);
+            
+            resolve(recomendacoes);
+          }, 1500);
+        });
+      }
+      
+      function getDescricaoRecomendacao(codigo, perfil) {
+        const descricoes = {
+          "PETR4": "Petrobras apresenta solidez com alta demanda por energia e preços do petróleo estáveis.",
+          "VALE3": "Vale se beneficia da demanda global por minério de ferro e commodities.",
+          "ITUB4": "Itaú Unibanco mostra resiliência mesmo em cenários econômicos desafiadores.",
+          "BBDC4": "Bradesco está em processo de reestruturação com potencial de valorização.",
+          "BBAS3": "Banco do Brasil tem forte atuação governamental e carteira robusta.",
+          "WEGE3": "WEG é líder em equipamentos elétricos com forte atuação internacional.",
+          "MGLU3": "Magazine Luiza apresenta alto potencial de crescimento, mas com volatilidade.",
+          "LREN3": "Lojas Renner tem gestão eficiente e boa penetração no varejo de moda."
+        };
+        
+        const risco = perfil === 'conservador' ? 'baixo risco' : 
+                     perfil === 'moderado' ? 'risco moderado' : 'alto risco';
+        
+        return `${descricoes[codigo]} Ação classificada como ${risco}.`;
+      }
+      
+      function exibirRecomendacoes(recomendacoes) {
+        const container = document.getElementById('recomendacoes-content');
+        container.innerHTML = '';
+        
+        recomendacoes.forEach((rec, index) => {
+          const recHTML = `
+            <div class="recomendacao-card">
+              <div class="recomendacao-titulo">
+                ${index + 1}. ${rec.codigo} - ${rec.empresa} (${rec.recomendacao})
+              </div>
+              <div class="recomendacao-descricao">
+                ${rec.descricao}
+              </div>
+              <div class="recomendacao-detalhes">
+                <strong>Valor Atual:</strong> R$${rec.valorAtual.toFixed(2)} | 
+                <strong>Projeção de Retorno:</strong> ${rec.projecaoRetorno}% no período
+              </div>
+            </div>
+          `;
+          
+          container.insertAdjacentHTML('beforeend', recHTML);
+        });
+      }
+    </script>
+</body>
+</html>
