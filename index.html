@@ -47,7 +47,11 @@
     setTimeout(() => {
         if (localStorage.getItem('nome') === null || localStorage.getItem('email') === null || localStorage.getItem('senha') === null || localStorage.getItem('confirmar') === null) {
             window.location.href = 'cadastro.html';
-        }else{
+        }
+        else if (localStorage.getItem('email') === null || localStorage.getItem('senha') === null) {
+            window.location.href = 'login.html';
+        }
+        else{
             window.location.href = 'despesas.html';
         }
     }, 1000);
